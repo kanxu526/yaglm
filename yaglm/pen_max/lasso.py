@@ -24,7 +24,7 @@ def get_lasso_pen_max(X, y, loss, fit_intercept, weights=None,
         return mult_task_lasso_max(grad, weights=weights)
 
     elif nuc:
-        return nuclear_norm_max(grad, weights=weights)
+        return nuclear_norm_max(grad, coefsize=coefsize, weights=weights)
 
     elif groups is not None:
         return group_lasso_max(grad, groups=groups, weights=weights)
