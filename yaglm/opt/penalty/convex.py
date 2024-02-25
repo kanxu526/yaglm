@@ -305,7 +305,8 @@ class ExclusiveGroupLasso(Func):
 class NuclearNorm(Func):
     # https://github.com/scikit-learn-contrib/lightning/blob/master/lightning/impl/penalty.py
 
-    def __init__(self, pen_val=1, weights=None):
+    def __init__(self, coefsize, pen_val=1, weights=None):
+        self.coefsize = coefsize
         self.pen_val = pen_val
         if weights is not None:
             weights = np.array(weights).ravel()
@@ -314,6 +315,11 @@ class NuclearNorm(Func):
 
     def _prox(self, x, step=1):
 
+        # If coefsize is specified, reshape coef into a matrix of size equal to coefsize
+        if self.coefsize is not None:
+            x = x.reshape(self.coefsize)
+        if x.ndim == 1:
+            x = x.reshape((-1, 1))
         U, s, V = svd(x, full_matrices=False)
         if self.weights is None:
             thresh = self.pen_val * step
@@ -322,10 +328,14 @@ class NuclearNorm(Func):
 
         s = np.maximum(s - thresh, 0)
         U *= s
+        if self.coefsize is not None or x.ndim == 1:
+            return np.dot(U, V).reshape(-1)
         return np.dot(U, V)
 
     def _eval(self, x):
 
+        if self.coefsize is not None:
+            x = x.reshape(self.coefsize)
         U, s, V = svd(x, full_matrices=False)
         if self.weights is None:
             return self.pen_val * np.sum(s)

@@ -6,7 +6,7 @@ from yaglm.opt.from_config.loss import get_glm_loss_func
 
 def get_lasso_pen_max(X, y, loss, fit_intercept, weights=None,
                       sample_weight=None, offsets=None,
-                      multi_task=False, groups=None, nuc=False):
+                      multi_task=False, groups=None, nuc=False, coefsize=None):
 
     # make sure only one special thing is provided
     assert sum([multi_task, groups is not None, nuc]) <= 1
@@ -70,8 +70,10 @@ def group_lasso_max(grad, groups, weights=None):
     return group_norms.max()
 
 
-def nuclear_norm_max(grad, weights=None):
+def nuclear_norm_max(grad, coefsize, weights=None):
 
+    if coefsize is not None:
+        grad = grad.reshape(coefsize)
     sval_max = leading_sval(grad)
 
     if weights is None:

@@ -113,10 +113,12 @@ def get_penalty_func(config, n_features=None, n_responses=None):
         if flavor_kind == 'non_convex':
             # get non-convex func
             nc_func = get_outer_nonconvex_func(config)
-            return CompositeNuclearNorm(func=nc_func)
+            return CompositeNuclearNorm(coefsize=config.coefsize, 
+                                        func=nc_func)
 
         else:
             return NuclearNorm(pen_val=config.pen_val,
+                               coefsize=config.coefsize,
                                weights=config.weights)
 
     # Generalized and fused lasso

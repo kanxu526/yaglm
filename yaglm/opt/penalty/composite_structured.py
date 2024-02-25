@@ -106,7 +106,7 @@ class CompositeNuclearNorm(Func):
     # https://github.com/scikit-learn-contrib/lightning/blob/master/lightning/impl/penalty.py
 
     @autoassign
-    def __init__(self, func): pass
+    def __init__(self, coefsize, func): pass
 
     @property
     def is_smooth(self):
@@ -118,12 +118,20 @@ class CompositeNuclearNorm(Func):
 
     def _prox(self, x, step=1):
 
+        if self.coefsize is not None:
+            x = x.reshape(self.coefsize)
+        if x.ndim == 1:
+            x = x.reshape((-1, 1))
         U, s, V = svd(x, full_matrices=False)
         s = self.func.prox(s, step=step)
         U *= s
+        if self.coefsize is not None:
+            return np.dot(U, V).reshape(-1)
         return np.dot(U, V)
 
     def _eval(self, x):
+        if self.coefsize is not None:
+            x = x.reshape(self.coefsize)
         U, s, V = svd(x, full_matrices=False)
         return self.func.eval(s)
 

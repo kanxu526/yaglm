@@ -219,7 +219,7 @@ class NuclearNorm(WithFlavorPenSeqConfig):
     """
 
     @autoassign
-    def __init__(self, pen_val=1, weights=None, flavor=None): pass
+    def __init__(self, coefsize=None, pen_val=1, weights=None, flavor=None): pass
 
     def _get_vanilla_pen_val_max(self, X, y, loss, fit_intercept=True,
                                  sample_weight=None, offsets=None):
@@ -227,6 +227,7 @@ class NuclearNorm(WithFlavorPenSeqConfig):
         return get_lasso_pen_max(X=X, y=y, loss=loss,
                                  weights=self.weights,
                                  nuc=True,
+                                 coefsize=self.coefsize,
                                  fit_intercept=fit_intercept,
                                  sample_weight=sample_weight,
                                  offsets=offsets)

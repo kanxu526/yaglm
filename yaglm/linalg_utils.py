@@ -51,7 +51,7 @@ def leading_sval(X, solver='lobpcg', **kws):
         The largest singular value of X
     """
     # for 1d arrays return the frobenius norm
-    if min(X.shape) == 1:
+    if min(X.shape) == 1 or X.ndim == 1:
         return np.sqrt((X.reshape(-1) ** 2).sum())
 
     return svds(X, k=1, which='LM', solver=solver, **kws)[1].item()
